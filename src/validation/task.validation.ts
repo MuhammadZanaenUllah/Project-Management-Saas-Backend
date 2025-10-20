@@ -38,11 +38,13 @@ export const createTaskSchema = z.object({
   dueDate: dueDateSchema,
 });
 
-export const updateTaskSchema = z.object({
-  title: titleSchema,
-  description: descriptionSchema,
-  priority: prioritySchema,
-  status: statusSchema,
-  assignedTo: assignedToSchema,
-  dueDate: dueDateSchema,
-});
+export const updateTaskSchema = z
+  .object({
+    title: titleSchema,
+    description: descriptionSchema,
+    priority: prioritySchema,
+    status: statusSchema,
+    assignedTo: assignedToSchema,
+    dueDate: dueDateSchema,
+  })
+  .partial();

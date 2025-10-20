@@ -58,10 +58,10 @@ export const updateTaskService = async (
   projectId: string,
   taskId: string,
   body: {
-    title: string;
+    title?: string;
     description?: string;
-    priority: string;
-    status: string;
+    priority?: string;
+    status?: string;
     assignedTo?: string | null;
     dueDate?: string;
   }
@@ -82,11 +82,28 @@ export const updateTaskService = async (
     );
   }
 
-  const updatedTask = await TaskModel.findByIdAndUpdate(
-    taskId,
-    {
-      ...body,
-    },
+  // If reassigned, ensure the user is a member of this workspace
+  if (body.assignedTo) {
+    const isAssignedUserMember = await MemberModel.exists({
+      userId: body.assignedTo,
+      workspaceId,
+    });
+
+    if (!isAssignedUserMember) {
+      throw new BadRequestException(
+        "Assigned user is not a member of this workspace."
+      );
+    }
+  }
+
+  // Only include fields that are explicitly provided (not undefined)
+  const updateData: Record<string, any> = Object.fromEntries(
+    Object.entries(body).filter(([_, v]) => v !== undefined)
+  );
+
+  const updatedTask = await TaskModel.findOneAndUpdate(
+    { _id: taskId, project: projectId, workspace: workspaceId },
+    updateData,
     { new: true }
   );
 

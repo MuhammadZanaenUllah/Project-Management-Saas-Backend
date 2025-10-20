@@ -18,6 +18,7 @@ import {
   updateTaskService,
 } from "../services/task.service";
 import { HTTPSTATUS } from "../config/http.config";
+import { broadcastToWorkspace } from "../utils/sse";
 
 export const createTaskController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -36,6 +37,12 @@ export const createTaskController = asyncHandler(
       userId,
       body
     );
+
+    // Broadcast creation event
+    broadcastToWorkspace(workspaceId, {
+      type: "task.created",
+      payload: { task },
+    });
 
     return res.status(HTTPSTATUS.OK).json({
       message: "Task created successfully",
@@ -63,6 +70,12 @@ export const updateTaskController = asyncHandler(
       taskId,
       body
     );
+
+    // Broadcast update event
+    broadcastToWorkspace(workspaceId, {
+      type: "task.updated",
+      payload: { task: updatedTask },
+    });
 
     return res.status(HTTPSTATUS.OK).json({
       message: "Task updated successfully",
@@ -140,6 +153,12 @@ export const deleteTaskController = asyncHandler(
     roleGuard(role, [Permissions.DELETE_TASK]);
 
     await deleteTaskService(workspaceId, taskId);
+
+    // Broadcast deletion event
+    broadcastToWorkspace(workspaceId, {
+      type: "task.deleted",
+      payload: { taskId },
+    });
 
     return res.status(HTTPSTATUS.OK).json({
       message: "Task deleted successfully",
