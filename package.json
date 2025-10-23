@@ -2,13 +2,13 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "seed": "ts-node src/seeders/role.seeder.ts",
     "seed:dummy": "ts-node-dev --transpile-only src/seeders/dummy-data.seeder.ts",
-    "dev": "ts-node-dev --files src/server.ts",
+    "dev": "ts-node-dev --files src/index.ts",
     "build": "tsc && cp ./package.json ./dist/",
-    "start": "node dist/server.js"
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
